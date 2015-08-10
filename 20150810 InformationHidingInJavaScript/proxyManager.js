@@ -33,15 +33,17 @@ var ProxyManager = function () {
                     throw "no method " + name;
 
                 // Eine gleichnamige Methode in der Kapselung anlegen
-                Proxy.prototype[name] = function () {
-                    // Zur aktiven Kapselung die zugehörige Instanz der konkreten Klasse ermitteln
-                    var instance = map[this.index];
-                    if (instance === undefined)
-                        throw "proxy already disconnected";
+                Proxy.prototype[name] = function (fn) {
+                    return function () {
+                        // Zur aktiven Kapselung die zugehörige Instanz der konkreten Klasse ermitteln
+                        var instance = map[this.index];
+                        if (instance === undefined)
+                            throw "proxy already disconnected";
 
-                    // Den Funktionsaufruf unverändert an diese Instanz durchreichen
-                    return fn.apply(instance, arguments);
-                }
+                        // Den Funktionsaufruf unverändert an diese Instanz durchreichen
+                        return fn.apply(instance, arguments);
+                    };
+                }(fn);
             }
 
             return Proxy;
